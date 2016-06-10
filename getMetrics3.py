@@ -10,10 +10,18 @@ parser.add_argument('-I', '--Interval', help='Interval of Time. Allowed values a
 parser.add_argument('-T', '--Test', help='Test type. Allowed values are loss, latency, or jitter', required=True, choices=['loss', 'latency', 'jitter'], metavar='')
 args = parser.parse_args()
 
+
+with open('credentials.txt', 'r') as ins:
+	credList = ins.read().splitlines()
+
+user = credList[0]
+pwd = credList[1]
+
+print(user)
+print(pwd)
+
 #107148
 url = ('https://api.thousandeyes.com/v6/net/metrics/%s.json?window=%s%s' % (args.id, args.time, args.Interval))
-user = 'dj@spartancorps.com'
-pwd = 'djq4bw2k4000ry059rh8cy68vqcn9d9d'
 
 #Convert short argument to full work for use later
 if args.Interval == 'm':
@@ -54,5 +62,9 @@ print ('Selected Test:', test_details['testName'])
 out = []
 for metric in metric_list:
 	out.append(metric[test])
-testAverage = "%0.2f" % (sum(out)/len(out))
-print('The Average',args.Test, 'for the last', args.time, intervalLong, "is: " + testAverage + units)
+
+if len(out) != 0:
+	testAverage = "%0.2f" % (sum(out)/len(out))
+	print('The Average',args.Test, 'for the last', args.time, intervalLong, "is: " + testAverage + units)
+else:
+	print('No data returned by API')
