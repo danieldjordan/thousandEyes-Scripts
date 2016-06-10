@@ -3,22 +3,23 @@
 import requests
 import argparse
 
-parser = argparse.ArgumentParser(description='Enter Time Frame')
+parser = argparse.ArgumentParser(description='Enter Time Frame by using the command line variables.  The Username and API token will be read from credentials.txt which should contain the userline on the first line and API token on the second')
 parser.add_argument('-id', help='Test ID', required=True, type=int, metavar='')
 parser.add_argument('-t', '--time', help='Amount of Time', required=True, type=int, metavar='')
 parser.add_argument('-I', '--Interval', help='Interval of Time. Allowed values are m, h, d, w (minute, hour, day, week)', required=True, choices=['m', 'h', 'd', 'w'], metavar='')
 parser.add_argument('-T', '--Test', help='Test type. Allowed values are loss, latency, or jitter', required=True, choices=['loss', 'latency', 'jitter'], metavar='')
 args = parser.parse_args()
 
-
-with open('credentials.txt', 'r') as ins:
-	credList = ins.read().splitlines()
-
-user = credList[0]
-pwd = credList[1]
-
-print(user)
-print(pwd)
+#Pull in user credentials from file, if no credentials file found request from user
+try:
+	with open('credentials.txt', 'r') as ins:
+		credList = ins.read().splitlines()
+		user = credList[0]
+		pwd = credList[1]
+except:
+	print('No credentials file found')
+	user = input('Enter your username: ')
+	pwd = input('Enter your API Token: ')
 
 #107148
 url = ('https://api.thousandeyes.com/v6/net/metrics/%s.json?window=%s%s' % (args.id, args.time, args.Interval))
