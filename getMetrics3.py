@@ -43,6 +43,7 @@ elif args.Test == 'loss':
 	units = '%'
 else:
 	test = args.Test
+	units = 'ms'
 
 
 response = requests.get(url, auth=(user, pwd))
