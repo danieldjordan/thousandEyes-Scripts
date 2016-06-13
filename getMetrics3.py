@@ -14,20 +14,28 @@ args = parser.parse_args()
 apiUrl = ('https://api.thousandeyes.com/v6/')
 
 def getTests(user, pwd):
-	testUrl = (apiUrl + 'tests.json')
+	validTest = False
+	while validTest == False:
+		testType = input('What tests would you like to return(agent-to-agent, or agent-to-server)?')
+		if testType == ('agent-to-agent') or ('agent-to-server'):
+			testUrl = (apiUrl + 'tests/' + testType + '.json')
+			validTest = True
+		else:
+			print('That is not a valid test')
+
 	testResponse = requests.get(testUrl, auth=(user, pwd))
 
 	if testResponse.status_code != 200:
-		print('Status Code:', response.status_code, '-', response.reason)
+		print('Status Code:', testResponse.status_code, '-', testResponse.reason)
 		exit()
 
 	testData = testResponse.json()
 
 	testName = testData['test']
 	testList = []
-	print('TestID : Test name - Test type')
+	print('TestID : Test name')
 	for test in testName:
-		print(test['testId'],':',test['testName'], '-', test['type'])
+		print(test['testId'],':',test['testName'])#, '-', test['type'])
 		testList.append(test['testId'])
 
 	validID = False
@@ -89,14 +97,17 @@ if response.status_code != 200:
 
 data = response.json()
 
-
 metric_list = data['net']['metrics']
 test_details = data['net']['test']
 
 print ('Selected Test:', test_details['testName'])
 out = []
-for metric in metric_list:
-	out.append(metric[test])
+try:
+	for metric in metric_list:
+		out.append(metric[test])
+except:
+	print('There is a problem with the data, exiting script')
+	quit()
 
 if len(out) != 0:
 	testAverage = "%0.2f" % (sum(out)/len(out))
